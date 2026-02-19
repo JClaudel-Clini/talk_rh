@@ -1,30 +1,11 @@
+// common.js to load common utilities
+import { titleCaseFr, formatDateLongFr, eachDate, closeModal } from './common.js';
+
 (function() {
   // State for pagination
   let myLeavesData = [];
   let empPage = 1;
   let empPageSize = 10;
-
-  function formatDateFr(iso) {
-    if (!iso) return '';
-    const parts = iso.split('-');
-    if (parts.length !== 3) return iso;
-    return `${parts[2]}/${parts[1]}/${parts[0]}`;
-  }
-
-  function formatDateLongFr(iso) {
-    if (!iso) return '';
-    try {
-      const [y, m, d] = iso.split('-').map(x => parseInt(x, 10));
-      const dt = new Date(y, (m - 1), d);
-      return new Intl.DateTimeFormat(OC.getLanguage(), { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).format(dt);
-    } catch (e) { return formatDateFr(iso); }
-  }
-
-  // Presentational helper for capitalizing French long dates when needed
-  function titleCaseFr(s) {
-    if (!s) return s;
-    return s.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-  }
 
   async function loadMyLeaves() {
     const list = document.getElementById('myLeaves');
@@ -208,24 +189,6 @@
       // If error, keep field hidden
       onBehalfField.style.display = 'none';
     }
-  }
-
-  function eachDate(startIso, endIso) {
-    const results = [];
-    const start = new Date(startIso);
-    const end = new Date(endIso);
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      const y = d.getFullYear();
-      const m = (d.getMonth() + 1).toString().padStart(2, '0');
-      const day = d.getDate().toString().padStart(2, '0');
-      results.push(`${y}-${m}-${day}`);
-    }
-    return results;
-  }
-
-  function closeModal() {
-    const backdrop = document.getElementById('talkrhModalBackdrop');
-    if (backdrop) backdrop.style.display = 'none';
   }
 
   function openDayPartsModal(startIso, endIso, onConfirm) {
