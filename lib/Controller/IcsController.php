@@ -105,17 +105,17 @@ class IcsController extends Controller {
             $start = str_replace('-', '', (string)$l['start_date']); // YYYYMMDD
             // DTEND is exclusive; add 1 day to end_date for all-day event
             $endExclusive = $this->dateAddDays((string)$l['end_date'], 1);
-            $summary = 'Congé approuvé';
+            $summary = p($l->t('Congé approuvé'));
             if (!empty($l['type'])) {
-                $typeFr = $l['type'] === 'paid' ? 'Soldé' : ($l['type'] === 'unpaid' ? 'Sans Solde' : 'Récup.');
+                $typeFr = $l['type'] === 'paid' ? p($l->t('Soldé')) : ($l['type'] === 'unpaid' ? p($l->t('Sans Solde')) : p($l->t('Récup.')));
                 $summary .= ' · ' . $typeFr;
             }
             $desc = '';
             if (!empty($l['reason'])) {
-                $desc = 'Raison: ' . (string)$l['reason'];
+                $desc = t('talk_rh', 'Raison: ') . (string)$l['reason'];
             }
             if (!empty($l['admin_comment'])) {
-                $desc .= ($desc ? "\\n" : '') . 'Commentaire: ' . (string)$l['admin_comment'];
+                $desc .= ($desc ? "\\n" : '') . p($l->t('Commentaire: ')) . (string)$l['admin_comment'];
             }
             $uidLine = 'talk_rh-leave-' . (string)$l['id'] . '@' . parse_url($this->urlGenerator->getBaseUrl(), PHP_URL_HOST);
 

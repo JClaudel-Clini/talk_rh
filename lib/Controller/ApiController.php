@@ -49,6 +49,21 @@ class ApiController extends Controller {
         }
     }
 
+    private function ensureUserSupervisor(string $userId): void {
+        $user = $this->userSession->getUser();
+        if ($user === null) {
+            throw new \Exception('Not logged in');
+        }
+        $adminGroup = Application::getAdminGroupId($this->config);
+        $isServerAdmin = $this->groupManager->isAdmin($user->getUID());
+        $isAppAdmin = $this->groupManager->isInGroup($user->getUID(), $adminGroup);
+        if (!$this->isSupervisorOf($user->getUID(), $userId)) {
+            if (!$isServerAdmin && !$isAppAdmin) {
+                throw new \Exception('Supervisor or Admin privileges required');
+            }
+        }
+    }
+
     /**
      * @NoAdminRequired
      * @NoCSRFRequired
@@ -65,7 +80,7 @@ class ApiController extends Controller {
      */
     public function listMyEmployees(): JSONResponse {
         // Mirror calendar permissions: only app admins/managers; build from existing leaves
-        $this->ensureAppAdmin();
+        // $this->ensureAppAdmin();
         $user = $this->userSession->getUser();
         $superUid = $user->getUID();
         $employees = [];
@@ -149,6 +164,25 @@ class ApiController extends Controller {
         // All admins of the app (and server admins) can see all leaves
         $data = $this->leaveService->getAllLeaves();
         $this->logger->debug('[talk_rh] getAllLeaves: returning all leaves for admin uid=' . $user->getUID() . ', count=' . count($data), ['app' => 'talk_rh']);
+        return new JSONResponse(['leaves' => $data]);
+    }
+
+    /**
+     * @NoAdminRequired
+     * @NoCSRFRequired
+     */
+    public function getSupervisorLeaves(): JSONResponse {
+        $user = $this->userSession->getUser();
+        if ($user === null) {
+            throw new \Exception('Not logged in');
+        }
+        // All supervisor can see all leaves of supervised employees
+        $supervisedEmployees = $this->listMyEmployees()->getData();
+            $supervisedEmployeesUID = array_map(function($employee) {
+            return $employee['uid'];
+        }, $supervisedEmployees['employees']);
+        $data = $this->leaveService->getLeavesForUids($supervisedEmployeesUID);
+        $this->logger->debug('[talk_rh] getSupervisorLeaves: returning all supervised leaves for supervisor uid=' . $user->getUID() . ', count=' . count($data), ['app' => 'talk_rh']);
         return new JSONResponse(['leaves' => $data]);
     }
 
@@ -304,7 +338,8 @@ class ApiController extends Controller {
      * @NoCSRFRequired
      */
     public function setLeaveStatus(int $id, string $status, string $adminComment = ''): JSONResponse {
-        $this->ensureAppAdmin();
+        $leave = $this->leaveService->getLeaveById($id);
+        $this->ensureUserSupervisor($leave['uid']);
         $ok = $this->leaveService->setLeaveStatus($id, $status, $adminComment);
         $leave = $this->leaveService->getLeaveById($id);
         $debug = (string)($this->request->getParam('debug') ?? '0');

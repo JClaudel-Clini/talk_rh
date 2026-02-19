@@ -154,7 +154,7 @@ class LeaveService {
         if ($uid === '' || $start === '' || $end === '') return;
         $this->logger->warning('[talk_rh] Calendar push: start leaveId=' . $leaveId . ' uid=' . $uid . ' ' . $start . '→' . $end, ['app' => Application::APP_ID]);
         $this->lastCalendarDiag[] = 'start uid=' . $uid . ' ' . $start . '->' . $end;
-        
+
         // Ensure Calendar API is available (Nextcloud >= 28 typically)
         // Try to lazy-load the manager if DI did not provide it
         if ($this->calendarManager === null) {
@@ -202,29 +202,29 @@ class LeaveService {
         // Build ICS for an all-day event spanning start..end (DTEND exclusive)
         $startYmd = str_replace('-', '', $start);
         $endExclusive = $this->dateAddDaysIso($end, 1);
-        
+
         // Defining the calendar event title
         $displayName = $uid; // Default value (the ID) in case the user no longer exists
         $user = $this->userManager->get($uid);
         if ($user !== null) {
             $displayName = $user->getDisplayName();
-            // Get just the firstname 
-            $parts = explode(' ', $displayName); 
+            // Get just the firstname
+            $parts = explode(' ', $displayName);
             $displayName = $parts[0];
         }
 
         $summary = '';
         $type = (string)($leave['type'] ?? '');
         if ($type !== '') {
-            $typeFr = $type === 'paid' ? 'CP' : ($type === 'unpaid' ? 'CSS' : 'RTT');
+            $typeFr = $type === 'paid' ? p($l->t('CP')) : ($type === 'unpaid' ? p($l->t('CSS')) : p($l->t('RTT')));
             $summary .=  $typeFr . ' - ' . $displayName;
         }
 
         $desc = '';
         $reason = trim((string)($leave['reason'] ?? ''));
-        if ($reason !== '') { $desc = 'Raison: ' . $reason; }
+        if ($reason !== '') { $desc = p($l->t('Raison: ')) . $reason; }
         $adminComment = trim((string)($leave['admin_comment'] ?? ''));
-        if ($adminComment !== '') { $desc .= ($desc ? "\\n" : '') . 'Commentaire: ' . $adminComment; }
+        if ($adminComment !== '') { $desc .= ($desc ? "\\n" : '') . p($l->t('Commentaire: ')) . $adminComment; }
 
         $host = parse_url($this->urlGenerator->getBaseUrl(), PHP_URL_HOST) ?: 'nextcloud';
         $componentUid = 'talk_rh-leave-' . $leaveId . '@' . $host;
@@ -322,17 +322,17 @@ class LeaveService {
                 if ($start === '' || $end === '') return false;
                 $startYmd = str_replace('-', '', $start);
                 $endExclusive = $this->dateAddDaysIso($end, 1);
-                $summary = 'Congé approuvé';
+                $summary = p($l->t('Congé approuvé'));
                 $type = (string)($leave['type'] ?? '');
                 if ($type !== '') {
-                    $typeFr = $type === 'paid' ? 'Soldé' : ($type === 'unpaid' ? 'Sans Solde' : 'Récup.');
+                    $typeFr = $type === 'paid' ? p($l->t('Soldé')) : ($type === 'unpaid' ? p($l->t('Sans Solde')) : p($l->t('Récup.')));
                     $summary .= ' · ' . $typeFr;
                 }
                 $desc = '';
                 $reason = trim((string)($leave['reason'] ?? ''));
-                if ($reason !== '') { $desc = 'Raison: ' . $reason; }
+                if ($reason !== '') { $desc = p($l->t('Raison: ')) . $reason; }
                 $adminComment = trim((string)($leave['admin_comment'] ?? ''));
-                if ($adminComment !== '') { $desc .= ($desc ? "\\n" : '') . 'Commentaire: ' . $adminComment; }
+                if ($adminComment !== '') { $desc .= ($desc ? "\\n" : '') . p($l->t('Commentaire: ')) . $adminComment; }
                 $host = parse_url($this->urlGenerator->getBaseUrl(), PHP_URL_HOST) ?: 'nextcloud';
                 $componentUid = 'talk_rh-leave-' . $leaveId . '@' . $host;
                 $dtstamp = (new \DateTimeImmutable('now', new \DateTimeZone('UTC')))->format('Ymd\THis\Z');
@@ -693,7 +693,7 @@ class LeaveService {
             }
             if (class_exists('\\IntlDateFormatter')) {
                 $fmt = new \IntlDateFormatter(
-                    'fr_FR',
+                    $this->l10n->getLanguageCode(),
                     \IntlDateFormatter::FULL,
                     \IntlDateFormatter::NONE,
                     $dt->getTimezone()->getName(),

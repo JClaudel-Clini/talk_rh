@@ -13,40 +13,40 @@ $_['currentPage'] = 'employee';
   <div class="talkrh-main">
     <div class="talkrh-container">
   <div class="talkrh-header">
-    <h2>Mes demandes de congés</h2>
+    <h2><?php p($l->t('Mes demandes de congés')); ?></h2>
   </div>
   <div id="leave-form" class="talkrh-form">
     <div class="field">
-      <label for="startDate">Date de début</label>
+      <label for="startDate"><?php p($l->t('Date de début')); ?></label>
       <input type="date" id="startDate">
     </div>
     <div class="field">
-      <label for="endDate">Date de fin</label>
+      <label for="endDate"><?php p($l->t('Date de fin')); ?></label>
       <input type="date" id="endDate">
     </div>
     <div class="field">
-      <label for="type">Type</label>
+      <label for="type"><?php p($l->t('Type')); ?></label>
       <select id="type">
-        <option value="paid">Soldé</option>
-        <option value="unpaid">Sans Solde</option>
-        <option value="sick">Récup.</option>
+        <option value="paid"><?php p($l->t('Soldé')); ?></option>
+        <option value="unpaid"><?php p($l->t('Sans Solde')); ?></option>
+        <option value="sick"><?php p($l->t('Récup.')); ?></option>
       </select>
     </div>
     <div class="field" id="onBehalfField" style="display:none;">
-      <label for="onBehalf">Au nom de</label>
+      <label for="onBehalf"><?php p($l->t('Au nom de')); ?></label>
       <select id="onBehalf">
-        <option value="">Moi-même</option>
+        <option value=""><?php p($l->t('Moi-même')); ?></option>
       </select>
     </div>
     <div class="field">
-      <label for="reason">Raison (optionnel)</label>
-      <input type="text" id="reason" placeholder="Optionnel">
+      <label for="reason"><?php p($l->t('Raison (optionnel)')); ?></label>
+      <input type="text" id="reason" placeholder="<?php p($l->t('Optionnel')); ?>">
     </div>
-    <button id="createBtn" class="button primary">Créer</button>
+    <button id="createBtn" class="button primary"><?php p($l->t('Créer')); ?></button>
   </div>
   <div class="talkrh-actions" style="justify-content: space-between; align-items:center; margin: 8px 0;">
     <div>
-      <label for="empPageSize" style="font-size:13px; color: var(--talkrh-muted);">Affichage:</label>
+      <label for="empPageSize" style="font-size:13px; color: var(--talkrh-muted);"><?php p($l->t('Affichage:')); ?></label>
       <select id="empPageSize">
         <option value="5">5</option>
         <option value="10" selected>10</option>
@@ -57,13 +57,13 @@ $_['currentPage'] = 'employee';
       </select>
     </div>
     <div>
-      <button id="empPrev" class="button">Précédent</button>
-      <span id="empPageInfo" class="talkrh-meta" style="margin: 0 8px;">Page 1/1</span>
-      <button id="empNext" class="button">Suivant</button>
+      <button id="empPrev" class="button"><?php p($l->t('Précédent')); ?></button>
+      <span id="empPageInfo" class="talkrh-meta" style="margin: 0 8px;"><?php p($l->t('Page')); ?> 1/1</span>
+      <button id="empNext" class="button"><?php p($l->t('Suivant')); ?></button>
     </div>
   </div>
   <ul id="myLeaves" class="talkrh-list"></ul>
-  <div class="talkrh-empty" id="empEmptyHint" style="display:none;">Aucune demande pour le moment.</div>
+  <div class="talkrh-empty" id="empEmptyHint" style="display:none;"><?php p($l->t('Aucune demande pour le moment.')); ?></div>
     </div>
   </div>
 </div>

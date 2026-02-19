@@ -7,10 +7,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const talkChannelSelect = document.getElementById('talkChannelSelect');
   const saveTalkChannelBtn = document.getElementById('saveTalkChannelBtn');
   if (!groupSelect || !membersList || !saveBtn) return;
-  try { document.title = 'Paramètres · Talk RH'; } catch(_) {}
+  try { document.title = t('talk_rh', 'Paramètres · Talk RH'); } catch(_) {}
 
   async function loadMembers(groupId) {
-    membersList.innerHTML = '<li>Chargement...</li>';
+    membersList.innerHTML = '<li>' + t('talk_rh', 'Chargement...') + '</li>';
     try {
       const res = await fetch(OC.generateUrl('/apps/talk_rh/api/admin/settings/group/members') + '?groupId=' + encodeURIComponent(groupId));
       const data = await res.json();
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       membersList.innerHTML = '';
       if (members.length === 0) {
         const li = document.createElement('li');
-        li.textContent = 'Aucun membre dans ce groupe.';
+        li.textContent = t('talk_rh', 'Aucun membre dans ce groupe.');
         membersList.appendChild(li);
       } else {
         members.forEach(user => {
@@ -36,26 +36,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     saveTalkChannelBtn.addEventListener('click', async () => {
       try {
         saveTalkChannelBtn.disabled = true;
-        saveTalkChannelBtn.textContent = 'Enregistrement...';
+        saveTalkChannelBtn.textContent = t('talk_rh', 'Enregistrement...');
         const form = new FormData();
         form.append('token', talkChannelSelect.value || '');
         await fetch(OC.generateUrl('/apps/talk_rh/api/admin/settings/talk/channel'), { method: 'POST', body: form });
-        saveTalkChannelBtn.textContent = 'Enregistré !';
+        saveTalkChannelBtn.textContent = t('talk_rh', 'Enregistré !');
         setTimeout(() => {
-          saveTalkChannelBtn.textContent = 'Enregistrer le canal';
+          saveTalkChannelBtn.textContent = t('talk_rh', 'Enregistrer le canal');
           saveTalkChannelBtn.disabled = false;
         }, 2000);
       } catch (e) {
-        saveTalkChannelBtn.textContent = 'Erreur';
+        saveTalkChannelBtn.textContent = t('talk_rh', 'Erreur');
         setTimeout(() => {
-          saveTalkChannelBtn.textContent = 'Enregistrer le canal';
+          saveTalkChannelBtn.textContent = t('talk_rh', 'Enregistrer le canal');
           saveTalkChannelBtn.disabled = false;
         }, 2000);
       }
     });
   }
     } catch (e) {
-      membersList.innerHTML = '<li>Erreur de chargement des membres.</li>';
+      membersList.innerHTML = '<li>' + t('talk_rh', 'Erreur de chargement des membres.') + '</li>';
     }
   }
 
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         talkChannelSelect.innerHTML = '';
         const noneOpt = document.createElement('option');
         noneOpt.value = '';
-        noneOpt.textContent = '— Aucun —';
+        noneOpt.textContent = '— ' + t('talk_rh', 'Aucun') + ' —';
         talkChannelSelect.appendChild(noneOpt);
         channels.forEach(ch => {
           const opt = document.createElement('option');
@@ -128,34 +128,34 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     } catch (e) {
       if (talkChannelSelect) {
-        talkChannelSelect.innerHTML = '<option>Erreur de chargement</option>';
+        talkChannelSelect.innerHTML = '<option>' + t('talk_rh', 'Erreur de chargement') + '</option>';
       }
     }
 
     saveBtn.addEventListener('click', async () => {
       try {
         saveBtn.disabled = true;
-        saveBtn.textContent = 'Enregistrement...';
+        saveBtn.textContent = t('talk_rh', 'Enregistrement...');
         const form = new FormData();
         form.append('groupId', groupSelect.value);
         await fetch(OC.generateUrl('/apps/talk_rh/api/admin/settings/group'), { method: 'POST', body: form });
-        saveBtn.textContent = 'Enregistré !';
+        saveBtn.textContent = t('talk_rh', 'Enregistré !');
         setTimeout(() => {
-          saveBtn.textContent = 'Enregistrer';
+          saveBtn.textContent = t('talk_rh', 'Enregistrer');
           saveBtn.disabled = false;
         }, 2000);
       } catch (e) {
-        saveBtn.textContent = 'Erreur';
+        saveBtn.textContent = t('talk_rh', 'Erreur');
         setTimeout(() => {
-          saveBtn.textContent = 'Enregistrer';
+          saveBtn.textContent = t('talk_rh', 'Enregistrer');
           saveBtn.disabled = false;
         }, 2000);
       }
     });
 
   } catch (e) {
-    groupSelect.innerHTML = '<option>Erreur de chargement</option>';
-    membersList.innerHTML = '<li>Erreur de chargement de la configuration.</li>';
+    groupSelect.innerHTML = '<option>' + t('talk_rh', 'Erreur de chargement') + '</option>';
+    membersList.innerHTML = '<li>' + t('talk_rh', 'Erreur de chargement de la configuration.') + '</li>';
   }
 
   if (saveTalkBtn && talkToggle) {
@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       try {
         if (saveTalkBtn) {
           saveTalkBtn.disabled = true;
-          saveTalkBtn.textContent = 'Enregistrement...';
+          saveTalkBtn.textContent = t('talk_rh', 'Enregistrement...');
         }
         const desired = talkToggle.checked ? '1' : '0';
         const form = new FormData();
@@ -183,17 +183,17 @@ document.addEventListener('DOMContentLoaded', async () => {
           }
         } catch (_) {}
         if (saveTalkBtn) {
-          saveTalkBtn.textContent = 'Enregistré !';
+          saveTalkBtn.textContent = t('talk_rh', 'Enregistré !');
           setTimeout(() => {
-            saveTalkBtn.textContent = 'Sauvegarder';
+            saveTalkBtn.textContent = t('talk_rh', 'Sauvegarder');
             saveTalkBtn.disabled = false;
           }, 1500);
         }
       } catch (e) {
         if (saveTalkBtn) {
-          saveTalkBtn.textContent = 'Erreur';
+          saveTalkBtn.textContent = t('talk_rh', 'Erreur');
           setTimeout(() => {
-            saveTalkBtn.textContent = 'Sauvegarder';
+            saveTalkBtn.textContent = t('talk_rh', 'Sauvegarder');
             saveTalkBtn.disabled = false;
           }, 1500);
         }
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     saveTalkBtn.addEventListener('click', async () => {
       try {
         saveTalkBtn.disabled = true;
-        saveTalkBtn.textContent = 'Enregistrement...';
+        saveTalkBtn.textContent = t('talk_rh', 'Enregistrement...');
         const form = new FormData();
         const desired = talkToggle.checked ? '1' : '0';
         form.append('enabled', desired);
@@ -222,15 +222,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
           }
         } catch (_) {}
-        saveTalkBtn.textContent = 'Enregistré !';
+        saveTalkBtn.textContent = t('talk_rh', 'Enregistré !');
         setTimeout(() => {
-          saveTalkBtn.textContent = 'Sauvegarder';
+          saveTalkBtn.textContent = t('talk_rh', 'Sauvegarder');
           saveTalkBtn.disabled = false;
         }, 2000);
       } catch (e) {
-        saveTalkBtn.textContent = 'Erreur';
+        saveTalkBtn.textContent = t('talk_rh', 'Erreur');
         setTimeout(() => {
-          saveTalkBtn.textContent = 'Sauvegarder';
+          saveTalkBtn.textContent = t('talk_rh', 'Sauvegarder');
           saveTalkBtn.disabled = false;
         }, 2000);
       }

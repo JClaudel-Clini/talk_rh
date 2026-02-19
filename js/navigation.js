@@ -6,7 +6,6 @@
     init: function() {
       this.setupMobileToggle();
       this.setupActiveStates();
-      this.setupAdminViewToggle();
       this.setupFavicon();
     },
 
@@ -49,6 +48,8 @@
           this.setMainNavActive('employee');
         } else if (currentPath.includes('/page/settings')) {
           this.setMainNavActive('settings');
+        } else if (currentPath.includes('/page/supervisor')) {
+          this.setMainNavActive('supervisor');
         } else if (currentPath.includes('/apps/talk_rh/page')) {
           this.setMainNavActive('admin');
         }
@@ -70,8 +71,10 @@
         selector = '.app-navigation-entry-link[href*="/page/employee"]';
       } else if (page === 'settings') {
         selector = '.app-navigation-entry-link[href*="/page/settings"]';
+      } else if (page === 'supervisor') {
+        selector = '.app-navigation-entry-link[href*="/page/supervisor"]';
       } else if (page === 'admin') {
-        selector = '.app-navigation-entry-link[href="/apps/talk_rh/page"]';
+        selector = '.app-navigation-entry-link';
       }
 
       if (selector) {
@@ -82,30 +85,6 @@
             navEntry.classList.add('active');
           }
         }
-      }
-    },
-
-    setupAdminViewToggle: function() {
-      // Only setup if we're on admin page
-      if (!window.location.pathname.includes('/apps/talk_rh/page') || 
-          window.location.pathname.includes('/page/employee') || 
-          window.location.pathname.includes('/page/settings')) {
-        return;
-      }
-
-      const calendarBtn = document.getElementById('navViewCalendar');
-      const listBtn = document.getElementById('navViewList');
-      
-      if (calendarBtn && listBtn) {
-        calendarBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          this.setAdminViewActive('calendar');
-        });
-
-        listBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          this.setAdminViewActive('list');
-        });
       }
     },
 
@@ -148,9 +127,7 @@
 
     setAdminViewActive: function(view) {
       // Remove active from sub-items
-      document.querySelectorAll('#nav-calendar, #nav-list').forEach(el => {
-        el.classList.remove('active');
-      });
+      document.querySelectorAll('#nav-calendar-supervisor, #nav-list-supervisor, #nav-calendar-admin, #nav-list-admin').forEach(el => el.classList.remove('active'));
       
       // Add active to selected view
       const targetEl = document.getElementById('nav-' + view);

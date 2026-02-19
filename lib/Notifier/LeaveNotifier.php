@@ -33,10 +33,10 @@ class LeaveNotifier implements INotifier {
             $uid = (string)($params['uid'] ?? '');
             $start = (string)($params['start'] ?? '');
             $end = (string)($params['end'] ?? '');
-            $label = 'Nouvelle demande de congés';
+            $label = p($l->t('Nouvelle demande de congés'));
             $text = $uid !== ''
-                ? sprintf('%s a créé une demande de congés du %s au %s.', $uid, $start, $end)
-                : sprintf('Nouvelle demande de congés du %s au %s.', $start, $end);
+                ? sprintf(p($l->t('%s a créé une demande de congés du %s au %s.')), $uid, $start, $end)
+                : sprintf(p($l->t('Nouvelle demande de congés du %s au %s.')), $start, $end);
 
             $notification->setParsedSubject($label)
                 ->setParsedMessage($text)
@@ -51,10 +51,10 @@ class LeaveNotifier implements INotifier {
             $start = (string)($params['start'] ?? '');
             $end = (string)($params['end'] ?? '');
             $comment = (string)($params['comment'] ?? '');
-            $statusFr = $status === 'approved' ? 'approuvée' : ($status === 'rejected' ? 'refusée' : 'mise à jour');
-            $label = 'Statut de votre demande';
-            $base = sprintf('Votre demande de congés (%s → %s) a été %s.', $start, $end, $statusFr);
-            $text = $comment !== '' ? $base . ' Commentaire: ' . $comment : $base;
+            $statusFr = $status === 'approved' ? p($l->t('approuvée')) : ($status === 'rejected' ? p($l->t('refusée')) : p($l->t('mise à jour')));
+            $label = p($l->t('Statut de votre demande'));
+            $base = sprintf(p($l->t('Votre demande de congés (%s → %s) a été %s.')), $start, $end, $statusFr);
+            $text = $comment !== '' ? $base . ' ' . p($l->t('Commentaire: ')) . $comment : $base;
 
             $notification->setParsedSubject($label)
                 ->setParsedMessage($text)

@@ -1,12 +1,12 @@
 <?php
-script('talk_rh', 'admin');
+script('talk_rh', 'supervisor');
 script('talk_rh', 'navigation');
 script('talk_rh', 'loader');
 style('files', 'style');
 style('talk_rh', 'main');
 
 // Set navigation context
-$_['currentPage'] = 'admin';
+$_['currentPage'] = 'supervisor';
 ?>
 <div class="talkrh-layout">
   <?php include_once __DIR__ . '/navigation.php'; ?>
@@ -43,12 +43,12 @@ $_['currentPage'] = 'admin';
     </div>
     <div class="calendar-grid" id="calendarGrid"></div>
   </div>
-  <div id="adminListView" class="talkrh-list" style="display:none;">
+  <div id="supervisorListView" class="talkrh-list" style="display:none;">
     <div class="talkrh-card">
       <div class="title"><?php p($l->t('Liste des demandes')); ?></div>
       <div class="talkrh-meta"><?php p($l->t('Filtrée par Employé et Statut.')); ?></div>
       <div class="talkrh-table-wrapper">
-        <table id="adminListTable" class="talkrh-table" style="width:100%">
+        <table id="supervisorListTable" class="talkrh-table" style="width:100%">
           <thead>
             <tr>
               <th>#</th>

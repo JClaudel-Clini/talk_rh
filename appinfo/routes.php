@@ -3,20 +3,25 @@ return [
     'routes' => [
         // Page principale de ton app (celle qui s'ouvre depuis le menu)
         ['name' => 'page#index', 'url' => '/page', 'verb' => 'GET'],
+        // Vue manager accessible explicitement pour les utilisateurs supervisant un compte
+        ['name' => 'page#supervisorView', 'url' => '/page/supervisor', 'verb' => 'GET'],
         // Vue employé accessible explicitement (utile pour les admins aussi)
         ['name' => 'page#employeeView', 'url' => '/page/employee', 'verb' => 'GET'],
-    ['name' => 'page#settingsView', 'url' => '/page/settings', 'verb' => 'GET'],
+        ['name' => 'page#settingsView', 'url' => '/page/settings', 'verb' => 'GET'],
 
         // Employee API
         ['name' => 'api#getMyLeaves', 'url' => '/api/leaves', 'verb' => 'GET'],
         ['name' => 'api#createLeave', 'url' => '/api/leaves', 'verb' => 'POST'],
         ['name' => 'api#deleteLeave', 'url' => '/api/leaves/{id}', 'verb' => 'DELETE'],
 
+        // Supervisor endpoints
+        ['name' => 'api#listMyEmployees', 'url' => '/api/my/employees', 'verb' => 'GET'],
+        ['name' => 'api#getSupervisorLeaves', 'url' => '/api/supervisor/leaves', 'verb' => 'GET'],
+        ['name' => 'api#setLeaveStatus', 'url' => '/api/supervisor/leaves/{id}/status', 'verb' => 'POST'],
+
         // Admin API
         ['name' => 'api#getAllLeaves', 'url' => '/api/admin/leaves', 'verb' => 'GET'],
         ['name' => 'api#setLeaveStatus', 'url' => '/api/admin/leaves/{id}/status', 'verb' => 'POST'],
-        // Manager endpoints
-        ['name' => 'api#listMyEmployees', 'url' => '/api/my/employees', 'verb' => 'GET'],
 
         // Settings (admin page renders via ISettings; this endpoint saves selection)
         ['name' => 'api#saveAdminGroup', 'url' => '/api/admin/settings/group', 'verb' => 'POST'],

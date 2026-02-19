@@ -115,8 +115,8 @@
   }
 
   function renderList() {
-    const listView = document.getElementById('adminListView');
-    const tbody = document.querySelector('#adminListTable tbody');
+    const listView = document.getElementById('supervisorListView');
+    const tbody = document.querySelector('#supervisorListTable tbody');
     if (!listView || !tbody) return;
     tbody.innerHTML = '';
     const rows = leavesFiltered().slice().sort((a,b) => {
@@ -157,7 +157,7 @@
           form.append('status', 'approved');
           try { if (window.talkrhLoader) window.talkrhLoader.show(); } catch(_) {}
           try {
-            await fetch(OC.generateUrl('/apps/talk_rh/api/admin/leaves/' + l.id + '/status'), { method: 'POST', body: form });
+            await fetch(OC.generateUrl('/apps/talk_rh/api/supervisor/leaves/' + l.id + '/status'), { method: 'POST', body: form });
           } finally {
             try { if (window.talkrhLoader) window.talkrhLoader.hide(); } catch(_) {}
           }
@@ -170,7 +170,7 @@
         reject.onclick = async () => {
           const form = new FormData();
           form.append('status', 'rejected');
-          await fetch(OC.generateUrl('/apps/talk_rh/api/admin/leaves/' + l.id + '/status'), { method: 'POST', body: form });
+          await fetch(OC.generateUrl('/apps/talk_rh/api/supervisor/leaves/' + l.id + '/status'), { method: 'POST', body: form });
           await loadAll();
         };
         tdActions.appendChild(approve);
@@ -220,13 +220,13 @@
   function render() {
     if (currentView === 'calendar') {
       const cal = document.getElementsByClassName('talkrh-calendar')[0];
-      const list = document.getElementById('adminListView');
+      const list = document.getElementById('supervisorListView');
       if (cal) cal.style.display = '';
       if (list) list.style.display = 'none';
       renderCalendar();
     } else {
       const cal = document.getElementsByClassName('talkrh-calendar')[0];
-      const list = document.getElementById('adminListView');
+      const list = document.getElementById('supervisorListView');
       if (cal) cal.style.display = 'none';
       if (list) list.style.display = '';
       renderList();
@@ -353,7 +353,7 @@
           if (comment) form.append('adminComment', comment);
           try { if (window.talkrhLoader) window.talkrhLoader.show(); } catch(_) {}
           try {
-            await fetch(OC.generateUrl('/apps/talk_rh/api/admin/leaves/' + l.id + '/status'), { method: 'POST', body: form });
+            await fetch(OC.generateUrl('/apps/talk_rh/api/supervisor/leaves/' + l.id + '/status'), { method: 'POST', body: form });
           } finally {
             try { if (window.talkrhLoader) window.talkrhLoader.hide(); } catch(_) {}
           }
@@ -370,7 +370,7 @@
           if (comment) form.append('adminComment', comment);
           try { if (window.talkrhLoader) window.talkrhLoader.show(); } catch(_) {}
           try {
-            await fetch(OC.generateUrl('/apps/talk_rh/api/admin/leaves/' + l.id + '/status'), { method: 'POST', body: form });
+            await fetch(OC.generateUrl('/apps/talk_rh/api/supervisor/leaves/' + l.id + '/status'), { method: 'POST', body: form });
           } finally {
             try { if (window.talkrhLoader) window.talkrhLoader.hide(); } catch(_) {}
           }
@@ -388,110 +388,6 @@
       card.appendChild(actions);
       bodyEl.appendChild(card);
     });
-    backdrop.style.display = 'block';
-  }
-
-  async function openSettingsModal() {
-    const backdrop = document.getElementById('talkrhModalBackdrop');
-    const titleEl = document.getElementById('talkrhModalTitle');
-    const bodyEl = document.getElementById('talkrhModalBody');
-    if (!backdrop || !titleEl || !bodyEl) return;
-
-    titleEl.textContent = t('talk_rh', 'Paramètres · Groupe administrateur');
-    bodyEl.innerHTML = '';
-
-    const field = document.createElement('div');
-    field.className = 'field';
-    const label = document.createElement('label');
-    label.textContent = t('talk_rh', 'Groupe admin');
-    label.htmlFor = 'settingsGroupSelect';
-    const select = document.createElement('select');
-    select.id = 'settingsGroupSelect';
-    select.className = '';
-    field.appendChild(label);
-    field.appendChild(select);
-
-    const membersTitle = document.createElement('h4');
-    membersTitle.textContent = t('talk_rh', 'Membres du groupe');
-    const membersList = document.createElement('ul');
-    membersList.id = 'settingsMembersList';
-    membersList.className = 'talkrh-list';
-
-    const actions = document.createElement('div');
-    actions.className = 'talkrh-actions';
-    const saveBtn = document.createElement('button');
-    saveBtn.className = 'button primary';
-    saveBtn.textContent = t('talk_rh', 'Enregistrer');
-    const cancelBtn = document.createElement('button');
-    cancelBtn.className = 'button';
-    cancelBtn.textContent = t('talk_rh', 'Annuler');
-    cancelBtn.onclick = () => closeModal();
-    actions.appendChild(saveBtn);
-    actions.appendChild(cancelBtn);
-
-    bodyEl.appendChild(field);
-    bodyEl.appendChild(membersTitle);
-    bodyEl.appendChild(membersList);
-    bodyEl.appendChild(actions);
-
-    async function loadMembers(groupId) {
-      membersList.innerHTML = '';
-      try {
-        const res = await fetch(OC.generateUrl('/apps/talk_rh/api/admin/settings/group/members') + '?groupId=' + encodeURIComponent(groupId));
-        const data = await res.json();
-        const mem = Array.isArray(data.members) ? data.members : [];
-        if (mem.length === 0) {
-          const li = document.createElement('li');
-          li.textContent = t('talk_rh', 'Aucun membre dans ce groupe.');
-          membersList.appendChild(li);
-        } else {
-          mem.forEach(u => {
-            const li = document.createElement('li');
-            li.textContent = `${u.displayName || u.uid} (${u.uid})`;
-            membersList.appendChild(li);
-          });
-        }
-      } catch (e) {
-        const li = document.createElement('li');
-        li.textContent = t('talk_rh', 'Erreur de chargement des membres.');
-        membersList.appendChild(li);
-      }
-    }
-
-    try {
-      // Load current group id
-      const currentRes = await fetch(OC.generateUrl('/apps/talk_rh/api/admin/settings/group'));
-      const currentData = await currentRes.json();
-      const currentGid = currentData.groupId || '';
-      // Load groups
-      const groupsRes = await fetch(OC.generateUrl('/apps/talk_rh/api/admin/settings/groups'));
-      const groupsData = await groupsRes.json();
-      const groups = Array.isArray(groupsData.groups) ? groupsData.groups : [];
-      select.innerHTML = '';
-      groups.forEach(g => {
-        const opt = document.createElement('option');
-        opt.value = g.id;
-        opt.textContent = g.displayName || g.id;
-        select.appendChild(opt);
-      });
-      if (currentGid && groups.some(g => g.id === currentGid)) {
-        select.value = currentGid;
-      }
-      select.onchange = () => loadMembers(select.value);
-      await loadMembers(select.value);
-
-      saveBtn.onclick = async () => {
-        const form = new FormData();
-        form.append('groupId', select.value);
-        await fetch(OC.generateUrl('/apps/talk_rh/api/admin/settings/group'), { method: 'POST', body: form });
-        closeModal();
-      };
-    } catch (e) {
-      const li = document.createElement('div');
-      li.textContent = t('talk_rh', 'Erreur de chargement de la configuration.');
-      bodyEl.appendChild(li);
-    }
-
     backdrop.style.display = 'block';
   }
 
@@ -550,14 +446,14 @@
   async function loadAll() {
     try {
       try { if (window.talkrhLoader) window.talkrhLoader.show(); } catch(_) {}
-      const res = await fetch(OC.generateUrl('/apps/talk_rh/api/admin/leaves'));
+      const res = await fetch(OC.generateUrl('/apps/talk_rh/api/supervisor/leaves'));
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const data = await res.json();
       allLeaves = Array.isArray(data.leaves) ? data.leaves : [];
       populateFilter(allLeaves);
       render();
     } catch (e) {
-      console.error('[talk_rh] admin.js: error fetching leaves', e);
+      console.error('[talk_rh] supervisor.js: error fetching leaves', e);
     } finally {
       try { if (window.talkrhLoader) window.talkrhLoader.hide(); } catch(_) {}
     }
@@ -580,8 +476,8 @@
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
     const openSettingsBtn = document.getElementById('openSettings');
     if (openSettingsBtn) openSettingsBtn.onclick = openSettingsModal;
-    const navViewCal = document.getElementById('navViewCalendar-admin');
-    const navViewList = document.getElementById('navViewList-admin');
+    const navViewCal = document.getElementById('navViewCalendar-supervisor');
+    const navViewList = document.getElementById('navViewList-supervisor');
 
     // Initialize current view from URL param if provided
     try {
@@ -629,10 +525,10 @@
     }
 
     function updateActiveNav() {
-      // Ensure main admin entry stays active with more robust selector
-      const adminEntry = document.querySelector('.app-navigation-entry-link[href="/apps/talk_rh/page"]');
-      if (adminEntry && !adminEntry.closest('.app-navigation-entry__children')) {
-        const navEntry = adminEntry.closest('.app-navigation-entry');
+      // Ensure main supervisor entry stays active with more robust selector
+      const supervisorEntry = document.querySelector('.app-navigation-entry-link[href="/apps/talk_rh/supervisor"]');
+      if (supervisorEntry && !supervisorEntry.closest('.app-navigation-entry__children')) {
+        const navEntry = supervisorEntry.closest('.app-navigation-entry');
         if (navEntry) {
           navEntry.classList.add('active');
         }
@@ -643,10 +539,10 @@
 
       // Add active class to current view
       if (currentView === 'calendar') {
-        const calEl = document.getElementById('nav-calendar-admin');
+        const calEl = document.getElementById('nav-calendar-supervisor');
         if (calEl) calEl.classList.add('active');
       } else if (currentView === 'list') {
-        const listEl = document.getElementById('nav-list-admin');
+        const listEl = document.getElementById('nav-list-supervisor');
         if (listEl) listEl.classList.add('active');
       }
 

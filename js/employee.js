@@ -10,13 +10,13 @@
     if (parts.length !== 3) return iso;
     return `${parts[2]}/${parts[1]}/${parts[0]}`;
   }
-  
+
   function formatDateLongFr(iso) {
     if (!iso) return '';
     try {
       const [y, m, d] = iso.split('-').map(x => parseInt(x, 10));
       const dt = new Date(y, (m - 1), d);
-      return new Intl.DateTimeFormat('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).format(dt);
+      return new Intl.DateTimeFormat(OC.getLanguage(), { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).format(dt);
     } catch (e) { return formatDateFr(iso); }
   }
 
@@ -25,7 +25,7 @@
     if (!s) return s;
     return s.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
   }
-  
+
   async function loadMyLeaves() {
     const list = document.getElementById('myLeaves');
     const empty = document.getElementById('empEmptyHint');
@@ -41,7 +41,7 @@
       renderMyLeaves();
     } catch (e) {
       const li = document.createElement('li');
-      li.textContent = 'Erreur lors du chargement de vos demandes: ' + e.message;
+      li.textContent = t('talk_rh', 'Erreur lors du chargement de vos demandes: ') + e.message;
       list.appendChild(li);
       console.error('[talk_rh] employee.js: error fetching leaves', e);
     }
@@ -58,7 +58,7 @@
     const total = myLeavesData.length;
     if (total === 0) {
       if (empty) empty.style.display = '';
-      if (pageInfo) pageInfo.textContent = 'Page 0/0';
+      if (pageInfo) pageInfo.textContent = t('talk_rh', 'Page') + ' 0/0';
       if (prevBtn) prevBtn.disabled = true;
       if (nextBtn) nextBtn.disabled = true;
       return;
@@ -82,22 +82,22 @@
 
         const meta = document.createElement('div');
         meta.className = 'talkrh-meta';
-        meta.textContent = `${formatDateLongFr(l.start_date)} → ${formatDateLongFr(l.end_date)}` + (l.reason ? ` • Raison: ${l.reason}` : '');
+        meta.textContent = `${formatDateLongFr(l.start_date)} → ${formatDateLongFr(l.end_date)}` + (l.reason ? ' • ' + t('talk_rh', 'Raison: ') + l.reason : '');
 
         const badges = document.createElement('div');
         badges.className = 'talkrh-badges';
         const type = document.createElement('span');
         type.className = 'talkrh-badge';
-        type.textContent = l.type === 'paid' ? 'Soldé' : (l.type === 'unpaid' ? 'Sans Solde' : 'Récup.');
+        type.textContent = l.type === 'paid' ? t('talk_rh', 'Soldé') : (l.type === 'unpaid' ? t('talk_rh', 'Sans Solde') : t('talk_rh', 'Récup.'));
         const status = document.createElement('span');
         status.className = 'talkrh-badge badge-' + l.status;
-        status.textContent = l.status === 'pending' ? 'En attente' : (l.status === 'approved' ? 'Approuvée' : 'Refusée');
+        status.textContent = l.status === 'pending' ? t('talk_rh', 'En attente') : (l.status === 'approved' ? t('talk_rh', 'Approuvée') : t('talk_rh', 'Refusée'));
         badges.appendChild(type);
         badges.appendChild(status);
         if (l.admin_comment) {
           const comment = document.createElement('span');
           comment.className = 'talkrh-badge';
-          comment.textContent = 'Commentaire: ' + l.admin_comment;
+          comment.textContent = t('talk_rh', 'Commentaire: ') + l.admin_comment;
           badges.appendChild(comment);
         }
 
@@ -106,9 +106,9 @@
         if (l.status === 'pending') {
           const del = document.createElement('button');
           del.className = 'danger';
-          del.textContent = 'Supprimer';
+          del.textContent = t('talk_rh', 'Supprimer');
           del.onclick = async () => {
-            if (!confirm('Supprimer cette demande ?')) return;
+            if (!confirm(t('talk_rh', 'Supprimer cette demande ?'))) return;
             await fetch(OC.generateUrl('/apps/talk_rh/api/leaves/' + l.id), { method: 'DELETE' });
             await loadMyLeaves();
           };
@@ -134,12 +134,12 @@
       const type = document.getElementById('type').value;
       const reason = document.getElementById('reason').value;
       if (!startDate || !endDate) {
-        alert('Merci de renseigner les dates de début et de fin.');
+        alert(t('talk_rh', 'Merci de renseigner les dates de début et de fin.'));
         return;
       }
       // Client-side guard: end must be >= start
       if (endDate < startDate) {
-        alert('La date de fin ne peut pas être antérieure à la date de début.');
+        alert(t('talk_rh', 'La date de fin ne peut pas être antérieure à la date de début.'));
         return;
       }
       // Open modal to select day parts before sending
@@ -195,7 +195,7 @@
       onBehalfSel.innerHTML = '';
       const optSelf = document.createElement('option');
       optSelf.value = '';
-      optSelf.textContent = 'Moi-même';
+      optSelf.textContent = t('talk_rh', 'Moi-même');
       onBehalfSel.appendChild(optSelf);
       employees.forEach(emp => {
         const opt = document.createElement('option');
@@ -233,19 +233,19 @@
     const titleEl = document.getElementById('talkrhModalTitle');
     const bodyEl = document.getElementById('talkrhModalBody');
     if (!backdrop || !titleEl || !bodyEl) return;
-    titleEl.textContent = 'Détail des journées';
+    titleEl.textContent = t('talk_rh', 'Détail des journées');
     bodyEl.innerHTML = '';
 
     const info = document.createElement('div');
     info.className = 'talkrh-meta';
-    info.textContent = 'Sélectionnez pour chaque jour: Journée complète, Matin, Après-midi. Utilisez "Tout sélectionner" pour appliquer à tous les jours.';
+    info.textContent = t('talk_rh', 'Sélectionnez pour chaque jour: Journée complète, Matin, Après-midi. Utilisez "Tout sélectionner" pour appliquer à tous les jours.');
     bodyEl.appendChild(info);
 
     const actionsAll = document.createElement('div');
     actionsAll.className = 'talkrh-actions';
-    const btnAllFull = document.createElement('button'); btnAllFull.textContent = 'Tout: Journée complète';
-    const btnAllAM = document.createElement('button'); btnAllAM.textContent = 'Tout: Matinée';
-    const btnAllPM = document.createElement('button'); btnAllPM.textContent = 'Tout: Après-midi';
+    const btnAllFull = document.createElement('button'); btnAllFull.textContent = t('talk_rh', 'Tout: Journée complète');
+    const btnAllAM = document.createElement('button'); btnAllAM.textContent = t('talk_rh', 'Tout: Matinée');
+    const btnAllPM = document.createElement('button'); btnAllPM.textContent = t('talk_rh', 'Tout: Après-midi');
     actionsAll.appendChild(btnAllFull);
     actionsAll.appendChild(btnAllAM);
     actionsAll.appendChild(btnAllPM);
@@ -256,7 +256,7 @@
     const dates = eachDate(startIso, endIso);
     const selected = {};
     dates.forEach(dateIso => { selected[dateIso] = 'full'; });
-    
+
     dates.forEach(dateIso => {
       const card = document.createElement('div');
       card.className = 'talkrh-card';
@@ -265,7 +265,7 @@
       title.textContent = titleCaseFr(formatDateLongFr(dateIso));
       const opts = document.createElement('div');
       opts.className = 'option-cards';
-      
+
       const mkCard = (label, value) => {
         const div = document.createElement('div');
         div.className = 'option-card' + (value === 'full' ? ' selected' : '');
@@ -279,10 +279,10 @@
         });
         return div;
       };
-      
-      opts.appendChild(mkCard('Journée complète', 'full'));
-      opts.appendChild(mkCard('Matinée', 'am'));
-      opts.appendChild(mkCard('Après-midi', 'pm'));
+
+      opts.appendChild(mkCard(t('talk_rh', 'Journée complète'), 'full'));
+      opts.appendChild(mkCard(t('talk_rh', 'Matinée'), 'am'));
+      opts.appendChild(mkCard(t('talk_rh', 'Après-midi'), 'pm'));
       card.appendChild(title);
       card.appendChild(opts);
       container.appendChild(card);
@@ -291,8 +291,8 @@
 
     const actions = document.createElement('div');
     actions.className = 'talkrh-actions';
-    const btnConfirm = document.createElement('button'); btnConfirm.className = 'button primary'; btnConfirm.textContent = 'Confirmer';
-    const btnCancel = document.createElement('button'); btnCancel.className = 'button'; btnCancel.textContent = 'Annuler'; btnCancel.onclick = () => closeModal();
+    const btnConfirm = document.createElement('button'); btnConfirm.className = 'button primary'; btnConfirm.textContent = t('talk_rh', 'Confirmer');
+    const btnCancel = document.createElement('button'); btnCancel.className = 'button'; btnCancel.textContent = t('talk_rh', 'Annuler'); btnCancel.onclick = () => closeModal();
     actions.appendChild(btnConfirm);
     actions.appendChild(btnCancel);
     bodyEl.appendChild(actions);
@@ -368,7 +368,7 @@
       }
     } catch (_) {}
     // Set page title
-    try { document.title = 'Mes congés · Talk RH'; } catch(_) {}
+    try { document.title = t('talk_rh', 'Mes congés · Talk RH'); } catch(_) {}
     // Initial bulk load with global loader
     try { if (window.talkrhLoader) window.talkrhLoader.show(); } catch(_) {}
     const sizeSel = document.getElementById('empPageSize');
